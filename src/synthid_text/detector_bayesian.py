@@ -724,6 +724,7 @@ class BayesianDetector:
 
   def score(self, outputs: jnp.ndarray) -> jnp.ndarray:
       """Score the model output for possibility of being watermarked."""
+      # Sanitize input: strip zero-width characters to prevent evasion attacks
       text_batch = self.tokenizer.batch_decode(np.array(outputs), skip_special_tokens=True)
       text_batch = [re.sub(r'[\u200B-\u200D\uFEFF]', '', t) for t in text_batch]
       outputs = self.tokenizer(text_batch, return_tensors="pt", padding=True)["input_ids"].to(self.logits_processor.keys.device)
